@@ -6,7 +6,7 @@ from typing import Any, Dict
 import numpy as np
 
 from .base import ShrinkingAlgorithm
-from embedding.embedding import uml_dict_to_graph, embed_graph
+from ..embedding import uml_dict_to_graph, embed_graph
 
 
 class GeneticAlgorithm(ShrinkingAlgorithm):
@@ -127,7 +127,7 @@ class GeneticAlgorithm(ShrinkingAlgorithm):
 
         G_shrunk = uml_dict_to_graph(self.decode_individual(individual))
 
-        if len(G_shrunk) == 0:
+        if len(G_shrunk) <= 3:
             return -float("inf")
 
         emb_orig = self.original_embedding
