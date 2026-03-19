@@ -1,0 +1,34 @@
+@startuml
+title Simple Banking System
+
+class User {
+  +name: String
+  +email: String
+  +login()
+}
+
+class Account {
+  +accountNumber: String
+  +balance: Float
+  +deposit(amount: Float)
+  +withdraw(amount: Float)
+}
+
+class Transaction {
+  +id: String
+  +amount: Float
+  +date: Date
+  +process()
+}
+
+class SomeNewClass {
+  +someAttribute: String
+  +someMethod()
+}
+
+User "1" --> "1..*" Account
+Account "1" --> "0..*" Transaction
+Transaction --> User
+SomeNewClass --> User
+
+@enduml

@@ -92,3 +92,14 @@ class TestGenericAlgorithm(unittest.TestCase):
         )
 
         self.assertIsNotNone(result)
+
+    def test_evolution_file4(self):
+        file = open(file="puml_files/file4.puml", encoding="UTF-8")
+
+        result = process_puml(
+            file=file,
+            algorithm="evol",
+            settings='{"iterations": 5}'
+        )
+
+        self.assertIsNotNone(result)

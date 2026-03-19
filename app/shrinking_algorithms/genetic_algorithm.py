@@ -127,6 +127,9 @@ class GeneticAlgorithm(ShrinkingAlgorithm):
 
         G_shrunk = uml_dict_to_graph(self.decode_individual(individual))
 
+        if len(G_shrunk) == 0:
+            return -float("inf")
+
         emb_orig = self.original_embedding
         emb_shrunk = embed_graph(G_shrunk)
 
