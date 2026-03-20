@@ -13,7 +13,10 @@ class Algorithm(StrEnum):
     none = "none"
 
 def process_puml(file: TextIO, algorithm: str, settings: str):
-    parser = PUMLParser("app/parsers/parser_config.json")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(current_dir, "parsers", "parser_config.json")
+    parser = PUMLParser(config_path)
+
     source_path = None
     output_path = None
 
