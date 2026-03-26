@@ -5,8 +5,10 @@ build-backend = "hatchling.build"
 [project]
 name = "shrinking-algorithms"
 version = "0.1.0"
-description = "shrinking algorithms"
+description = "Shrinking algorithms for PlantUML diagrams"
 readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Kristian Rusnak", email = "rusnak71@uniba.sk"}]
 requires-python = ">=3.10, <3.14"
 dependencies = [
     "numpy",
@@ -15,7 +17,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = []
+dev = [
+    "pytest",        # better test runner than unittest, but runs unittest-style tests too
+    "pytest-cov",    # test coverage reports — shows which lines of your code are tested
+    "ruff",          # fast linter + formatter, catches bugs and style issues
+    "mypy",          # static type checker
+    "hatch",         # build and publish tool you'll use for PyPI
+    "twine",         # uploads your built package to PyPI]
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/shrinking_algorithms"]
