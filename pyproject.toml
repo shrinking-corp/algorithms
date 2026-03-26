@@ -18,4 +18,4 @@ dependencies = [
 dev = []
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/app"]
+packages = ["src/shrinking_algorithms"]
