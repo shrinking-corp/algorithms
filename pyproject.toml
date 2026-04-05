@@ -8,7 +8,12 @@ version = "0.1.0"
 description = "Shrinking algorithms for PlantUML diagrams"
 readme = "README.md"
 license = {text = "MIT"}
-authors = [{name = "Kristian Rusnak", email = "rusnak71@uniba.sk"}]
+authors = [
+    {name = "Kristian Rusnak", email = "rusnak71@uniba.sk"},
+    {name = "Lukas Mihal", email = "mihal33@uniba.sk"},
+    {name = "Marek Lichvar", email = "lichvar4@uniba.sk"},
+    {name = "Artemii Kaliadin", email = "kaliadin1@uniba.sk"}
+]
 requires-python = ">=3.10, <3.14"
 dependencies = [
     "numpy",

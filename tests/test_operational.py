@@ -1,4 +1,4 @@
-from shrinking_algorithms import process_puml
+from shrinking_algorithms import DiagramShrinker
 import os
 import json
 import unittest
@@ -11,11 +11,8 @@ class TestKruskalAlgorithm(unittest.TestCase):
 
         file = open(file=puml_file_path, encoding="UTF-8")
 
-        result = process_puml(
-            file=file,
-            algorithm="kruskals",
-            settings='{}'
-        )
+        algorithm = DiagramShrinker(algorithm="kruskals")
+        result = algorithm.shrink(file).get_result()
 
         self.assertIsNotNone(result)
 
@@ -34,11 +31,8 @@ class TestKruskalAlgorithm(unittest.TestCase):
 
         file = open(file=puml_file_path, encoding="UTF-8")
 
-        result = process_puml(
-            file=file,
-            algorithm="kruskals",
-            settings='{}'
-        )
+        algorithm = DiagramShrinker(algorithm="kruskals")
+        result = algorithm.shrink(file).get_result()
 
         self.assertIsNotNone(result)
 
@@ -57,11 +51,8 @@ class TestKruskalAlgorithm(unittest.TestCase):
 
         file = open(file=puml_file_path, encoding="UTF-8")
 
-        result = process_puml(
-            file=file,
-            algorithm="kruskals",
-            settings='{}'
-        )
+        algorithm = DiagramShrinker(algorithm="kruskals")
+        result = algorithm.shrink(file).get_result()
 
         self.assertIsNotNone(result)
 
@@ -81,11 +72,11 @@ class TestGenericAlgorithm(unittest.TestCase):
         puml_file_path = os.path.join(current_dir, "puml_files", "file1.puml")
         file = open(file=puml_file_path, encoding="UTF-8")
 
-        result = process_puml(
-            file=file,
+        algorithm = DiagramShrinker(
             algorithm="evol",
-            settings='{"iterations": 5}'
+            iterations=5
         )
+        result = algorithm.shrink(file).get_result()
 
         self.assertIsNotNone(result)
 
@@ -94,11 +85,11 @@ class TestGenericAlgorithm(unittest.TestCase):
         puml_file_path = os.path.join(current_dir, "puml_files", "file2.puml")
         file = open(file=puml_file_path, encoding="UTF-8")
 
-        result = process_puml(
-            file=file,
+        algorithm = DiagramShrinker(
             algorithm="evol",
-            settings='{"iterations": 5}'
+            iterations=5
         )
+        result = algorithm.shrink(file).get_result()
 
         self.assertIsNotNone(result)
 
@@ -107,11 +98,11 @@ class TestGenericAlgorithm(unittest.TestCase):
         puml_file_path = os.path.join(current_dir, "puml_files", "file3.puml")
         file = open(file=puml_file_path, encoding="UTF-8")
 
-        result = process_puml(
-            file=file,
+        algorithm = DiagramShrinker(
             algorithm="evol",
-            settings='{"iterations": 5}'
+            iterations=5
         )
+        result = algorithm.shrink(file).get_result()
 
         self.assertIsNotNone(result)
 
@@ -120,10 +111,10 @@ class TestGenericAlgorithm(unittest.TestCase):
         puml_file_path = os.path.join(current_dir, "puml_files", "file4.puml")
         file = open(file=puml_file_path, encoding="UTF-8")
 
-        result = process_puml(
-            file=file,
+        algorithm = DiagramShrinker(
             algorithm="evol",
-            settings='{"iterations": 5}'
+            iterations=5
         )
+        result = algorithm.shrink(file).get_result()
 
         self.assertIsNotNone(result)
