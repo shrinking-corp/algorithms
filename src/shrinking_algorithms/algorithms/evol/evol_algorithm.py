@@ -5,11 +5,11 @@ from typing import Any, Dict
 
 import numpy as np
 
-from .base import ShrinkingAlgorithm
-from ..embedding import uml_dict_to_graph, embed_graph
+from shrinking_algorithms.algorithms import Algorithm
+from shrinking_algorithms.embedding import uml_dict_to_graph, embed_graph
 
 
-class GeneticAlgorithm(ShrinkingAlgorithm):
+class EvolAlgorithm(Algorithm):
     """
     Genetic Algorithm for diagram shrinking.
     Implements ShrinkingAlgorithm interface.
@@ -56,19 +56,6 @@ class GeneticAlgorithm(ShrinkingAlgorithm):
         self.original_embedding = None
         self.G_full = None
 
-    def load_config(self, config_path):
-        """Load docker configuration from JSON file."""
-
-        base_path = os.path.dirname(os.path.abspath(__file__))
-        full_path = os.path.join(base_path, config_path)
-
-        try:
-            with open(full_path, "r") as file:
-                return json.load(file)
-        except Exception as e:
-            print(f"Error loading config file: {e}")
-            return {}
-
     def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
         """
         Run the genetic algorithm on parsed PUML data and return the reduced PUML data.
@@ -88,6 +75,19 @@ class GeneticAlgorithm(ShrinkingAlgorithm):
         reduced_diagram = self.extract_solution(best_individual)
 
         return reduced_diagram
+
+    def load_config(self, config_path):
+        """Load docker configuration from JSON file."""
+
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        full_path = os.path.join(base_path, config_path)
+
+        try:
+            with open(full_path, "r") as file:
+                return json.load(file)
+        except Exception as e:
+            print(f"Error loading config file: {e}")
+            return {}
 
     def _extract_elements(self):
         """

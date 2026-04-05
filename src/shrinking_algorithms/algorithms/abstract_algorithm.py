@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-class ShrinkingAlgorithm(ABC):
+class Algorithm(ABC):
     """
     Interface for all diagram-shrinking algorithms.
     """

@@ -1,1 +1,1 @@
-from .shrinker import DiagramShrinker
+from shrinking_algorithms.shrinker import DiagramShrinker

@@ -1,1 +1,1 @@
-from .parse_puml_service import PUMLParser
+from shrinking_algorithms.parsers.parse_puml_service import PUMLParser

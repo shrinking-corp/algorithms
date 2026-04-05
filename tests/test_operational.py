@@ -12,7 +12,7 @@ class TestKruskalAlgorithm(unittest.TestCase):
         file = open(file=puml_file_path, encoding="UTF-8")
 
         algorithm = DiagramShrinker(algorithm="kruskals")
-        result = algorithm.shrink(file).get_result()
+        result = algorithm.shrink(file).get_all()
 
         self.assertIsNotNone(result)
 
@@ -32,7 +32,7 @@ class TestKruskalAlgorithm(unittest.TestCase):
         file = open(file=puml_file_path, encoding="UTF-8")
 
         algorithm = DiagramShrinker(algorithm="kruskals")
-        result = algorithm.shrink(file).get_result()
+        result = algorithm.shrink(file).get_all()
 
         self.assertIsNotNone(result)
 
@@ -52,7 +52,7 @@ class TestKruskalAlgorithm(unittest.TestCase):
         file = open(file=puml_file_path, encoding="UTF-8")
 
         algorithm = DiagramShrinker(algorithm="kruskals")
-        result = algorithm.shrink(file).get_result()
+        result = algorithm.shrink(file).get_all()
 
         self.assertIsNotNone(result)
 
@@ -76,7 +76,7 @@ class TestGenericAlgorithm(unittest.TestCase):
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(file).get_result()
+        result = algorithm.shrink(file).get_all()
 
         self.assertIsNotNone(result)
 
@@ -89,7 +89,7 @@ class TestGenericAlgorithm(unittest.TestCase):
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(file).get_result()
+        result = algorithm.shrink(file).get_all()
 
         self.assertIsNotNone(result)
 
@@ -102,7 +102,7 @@ class TestGenericAlgorithm(unittest.TestCase):
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(file).get_result()
+        result = algorithm.shrink(file).get_all()
 
         self.assertIsNotNone(result)
 
@@ -115,6 +115,6 @@ class TestGenericAlgorithm(unittest.TestCase):
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(file).get_result()
+        result = algorithm.shrink(file).get_all()
 
         self.assertIsNotNone(result)

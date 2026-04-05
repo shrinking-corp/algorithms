@@ -1,5 +1,5 @@
-from .parsers import PUMLParser
-from .shrinking_algorithms import get_algorithm
+from shrinking_algorithms.parsers import PUMLParser
+from shrinking_algorithms.algorithms import KruskalFactory, EvolFactory
 from typing import TextIO
 
 import os
@@ -41,13 +41,15 @@ def process_puml(file: TextIO, algorithm: str, settings: str):
             raise TypeError("Unable to parse PUML file")
 
         if algorithm == Algorithm.evolution:
-            alg = get_algorithm("genetic")
+            factory = EvolFactory()
+            alg = factory.get_algorithm()
             alg.initialize(
                 population_size=algorithm_settings.get("population", 50),
                 generations=algorithm_settings.get("iterations", 100),
             )
         elif algorithm == Algorithm.kruskals:
-            alg = get_algorithm("kruskal")
+            factory = KruskalFactory()
+            alg = factory.get_algorithm()
             # TODO: add settigns
         else:
             raise TypeError("Unknown algorithm")

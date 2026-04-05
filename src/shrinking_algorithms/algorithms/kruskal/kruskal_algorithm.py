@@ -1,9 +1,9 @@
 import os
 import json
 from typing import Any, Dict
-from .base import ShrinkingAlgorithm
+from shrinking_algorithms.algorithms.abstract_algorithm import Algorithm
 
-class KruskalsAlgorithm(ShrinkingAlgorithm):
+class KruskalsAlgorithm(Algorithm):
     """
     Kruskal's MST algorithm for diagram shrinking.
     Implements ShrinkingAlgorithm interface.
@@ -23,6 +23,24 @@ class KruskalsAlgorithm(ShrinkingAlgorithm):
         self.size = 0
         self.edges = []
         self.vertex_data = []
+
+    def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Run Kruskal's algorithm on parsed PUML data and return the MST.
+
+        Args:
+            parsed_puml: Dictionary with 'classes' and 'edges' keys
+
+        Returns:
+            Reduced PUML dictionary with MST edges
+        """
+        self.PUML = parsed_puml
+        self.size = len(parsed_puml["classes"])
+        self.edges = []
+        self.vertex_data = [''] * self.size
+
+        self.extract_puml_data(parsed_puml)
+        return self.solve()
 
     def load_weights(self, config_path):
         """Load weights mapping from JSON config file."""
@@ -49,24 +67,6 @@ class KruskalsAlgorithm(ShrinkingAlgorithm):
                 return value
 
         return 1
-
-    def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Run Kruskal's algorithm on parsed PUML data and return the MST.
-
-        Args:
-            parsed_puml: Dictionary with 'classes' and 'edges' keys
-
-        Returns:
-            Reduced PUML dictionary with MST edges
-        """
-        self.PUML = parsed_puml
-        self.size = len(parsed_puml["classes"])
-        self.edges = []
-        self.vertex_data = [''] * self.size
-
-        self.extract_puml_data(parsed_puml)
-        return self.solve()
 
     def extract_puml_data(self, PUML):
         for class_name, class_info in PUML["classes"].items():
