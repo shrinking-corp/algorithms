@@ -1,0 +1,2 @@
+from shrinking_algorithms.shrinkers.evol_shrinker import EvolDiagramShrinker
+from shrinking_algorithms.shrinkers.kruskal_shrinker import KruskalDiagramShrinker

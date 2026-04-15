@@ -1,4 +1,5 @@
 from shrinking_algorithms import DiagramShrinker
+from shrinking_algorithms.shrinkers import KruskalDiagramShrinker, EvolDiagramShrinker
 import os
 import json
 import unittest
@@ -12,7 +13,7 @@ class TestKruskalAlgorithm(unittest.TestCase):
         with open(puml_file_path, "r", encoding="utf-8") as file:
             content = file.read()
 
-        algorithm = DiagramShrinker(algorithm="kruskals")
+        algorithm = KruskalDiagramShrinker()
         result = algorithm.shrink(content).get_all()
 
         self.assertIsNotNone(result)
@@ -78,8 +79,7 @@ class TestGenericAlgorithm(unittest.TestCase):
             content = file.read()
 
         config = {"iterations": 6}
-        algorithm = DiagramShrinker(
-            algorithm="evol",
+        algorithm = EvolDiagramShrinker(
             config=config
         )
         result = algorithm.shrink(content).get_all()
