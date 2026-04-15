@@ -12,7 +12,7 @@ class Algorithm(StrEnum):
     kruskals = "kruskals"
     none = "none"
 
-def process_puml(file: TextIO, algorithm: str, settings: str):
+def process_puml(content: str, algorithm: str, settings: str):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(current_dir, "parsers", "parser_config.json")
     parser = PUMLParser(config_path)
@@ -29,7 +29,6 @@ def process_puml(file: TextIO, algorithm: str, settings: str):
     print(algorithm_settings)
 
     try:
-        content = file.read()
         with tempfile.NamedTemporaryFile(delete=False, suffix=".puml") as tmp:
             tmp.write(content.encode("utf-8"))
             source_path = tmp.name

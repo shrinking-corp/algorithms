@@ -21,7 +21,7 @@ class DiagramShrinker:
         self._reduced = None
         self._result_puml = None
 
-    def shrink(self, file: TextIO) -> "DiagramShrinker":
+    def shrink(self, content: str) -> "DiagramShrinker":
         """
         Shrink the given PlantUML diagram.
 
@@ -29,12 +29,12 @@ class DiagramShrinker:
         algorithm, and stores the results on the instance. Returns ``self``
         to allow method chaining.
 
-        :param file: An opened readable file object pointing to a .puml file.
+        :param content: The PlantUML diagram as a string.
         :returns: The instance itself, allowing chained getter calls.
         :raises TypeError: If the file cannot be parsed or the algorithm is unknown.
         :raises RuntimeError: If an unexpected error occurs during processing.
         """
-        result = process_puml(file, self.algorithm, json.dumps(self.params))
+        result = process_puml(content, self.algorithm, json.dumps(self.params))
 
         self._parsed = result.get("parsed")
         self._reduced = result.get("reduced")

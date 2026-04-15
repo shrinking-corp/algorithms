@@ -9,10 +9,11 @@ class TestKruskalAlgorithm(unittest.TestCase):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         puml_file_path = os.path.join(current_dir, "puml_files", "file1.puml")
 
-        file = open(file=puml_file_path, encoding="UTF-8")
+        with open(puml_file_path, "r", encoding="utf-8") as file:
+            content = file.read()
 
         algorithm = DiagramShrinker(algorithm="kruskals")
-        result = algorithm.shrink(file).get_all()
+        result = algorithm.shrink(content).get_all()
 
         self.assertIsNotNone(result)
 
@@ -29,10 +30,11 @@ class TestKruskalAlgorithm(unittest.TestCase):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         puml_file_path = os.path.join(current_dir, "puml_files", "file2.puml")
 
-        file = open(file=puml_file_path, encoding="UTF-8")
+        with open(puml_file_path, "r", encoding="utf-8") as file:
+            content = file.read()
 
         algorithm = DiagramShrinker(algorithm="kruskals")
-        result = algorithm.shrink(file).get_all()
+        result = algorithm.shrink(content).get_all()
 
         self.assertIsNotNone(result)
 
@@ -49,10 +51,11 @@ class TestKruskalAlgorithm(unittest.TestCase):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         puml_file_path = os.path.join(current_dir, "puml_files", "file3.puml")
 
-        file = open(file=puml_file_path, encoding="UTF-8")
+        with open(puml_file_path, "r", encoding="utf-8") as file:
+            content = file.read()
 
         algorithm = DiagramShrinker(algorithm="kruskals")
-        result = algorithm.shrink(file).get_all()
+        result = algorithm.shrink(content).get_all()
 
         self.assertIsNotNone(result)
 
@@ -70,51 +73,59 @@ class TestGenericAlgorithm(unittest.TestCase):
     def test_evolution_file1(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         puml_file_path = os.path.join(current_dir, "puml_files", "file1.puml")
-        file = open(file=puml_file_path, encoding="UTF-8")
+
+        with open(puml_file_path, "r", encoding="utf-8") as file:
+            content = file.read()
 
         algorithm = DiagramShrinker(
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(file).get_all()
+        result = algorithm.shrink(content).get_all()
 
         self.assertIsNotNone(result)
 
     def test_evolution_file2(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         puml_file_path = os.path.join(current_dir, "puml_files", "file2.puml")
-        file = open(file=puml_file_path, encoding="UTF-8")
+
+        with open(puml_file_path, "r", encoding="utf-8") as file:
+            content = file.read()
 
         algorithm = DiagramShrinker(
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(file).get_all()
+        result = algorithm.shrink(content).get_all()
 
         self.assertIsNotNone(result)
 
     def test_evolution_file3(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         puml_file_path = os.path.join(current_dir, "puml_files", "file3.puml")
-        file = open(file=puml_file_path, encoding="UTF-8")
+
+        with open(puml_file_path, "r", encoding="utf-8") as file:
+            content = file.read()
 
         algorithm = DiagramShrinker(
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(file).get_all()
+        result = algorithm.shrink(content).get_all()
 
         self.assertIsNotNone(result)
 
     def test_evolution_file4(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         puml_file_path = os.path.join(current_dir, "puml_files", "file4.puml")
-        file = open(file=puml_file_path, encoding="UTF-8")
+
+        with open(puml_file_path, "r", encoding="utf-8") as file:
+            content = file.read()
 
         algorithm = DiagramShrinker(
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(file).get_all()
+        result = algorithm.shrink(content).get_all()
 
         self.assertIsNotNone(result)
