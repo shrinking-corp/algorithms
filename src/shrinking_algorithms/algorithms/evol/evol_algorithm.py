@@ -2,11 +2,16 @@ import json
 import os
 import random
 from typing import Any, Dict
+from pathlib import Path
 
 import numpy as np
 
 from shrinking_algorithms.algorithms import Algorithm
-from shrinking_algorithms.embedding import uml_dict_to_graph, embed_graph
+from shrinking_algorithms.embedding import (
+    uml_dict_to_graph,
+    embed_graph,
+    find_embedding,
+)
 
 
 class EvolAlgorithm(Algorithm):
@@ -35,12 +40,24 @@ class EvolAlgorithm(Algorithm):
         config_path = params.get("config_path", "ga_config.json")
         self.config = self.load_config(config_path)
 
-        self.population_size = params.get("population_size", self.config.get("population_size", 50))
-        self.generations = params.get("generations", self.config.get("generations", 100))
-        self.mutation_rate = params.get("mutation_rate", self.config.get("mutation_rate", 0.1))
-        self.crossover_rate = params.get("crossover_rate", self.config.get("crossover_rate", 0.7))
-        self.exclusion_threshold = params.get("exclusion_threshold", self.config.get("exclusion_threshold", 0.5))
-        self.inclusion_threshold = params.get("inclusion_threshold", self.config.get("inclusion_threshold", 0.6))
+        self.population_size = params.get(
+            "population_size", self.config.get("population_size", 50)
+        )
+        self.generations = params.get(
+            "generations", self.config.get("generations", 100)
+        )
+        self.mutation_rate = params.get(
+            "mutation_rate", self.config.get("mutation_rate", 0.1)
+        )
+        self.crossover_rate = params.get(
+            "crossover_rate", self.config.get("crossover_rate", 0.7)
+        )
+        self.exclusion_threshold = params.get(
+            "exclusion_threshold", self.config.get("exclusion_threshold", 0.5)
+        )
+        self.inclusion_threshold = params.get(
+            "inclusion_threshold", self.config.get("inclusion_threshold", 0.6)
+        )
 
         upper_limit = params.get("upper_limit", self.config.get("upper_limit", 100))
         lower_limit = params.get("lower_limit", self.config.get("lower_limit", 1))
@@ -52,7 +69,7 @@ class EvolAlgorithm(Algorithm):
         self.element_types = []
         self.population = []
         self.best_individual = None
-        self.best_fitness = -float('inf')
+        self.best_fitness = -float("inf")
         self.original_embedding = None
         self.G_full = None
 
@@ -68,8 +85,8 @@ class EvolAlgorithm(Algorithm):
         """
         self.PUML = parsed_puml
         self._extract_elements()
-        self.G_full = uml_dict_to_graph(self.PUML)
-        self.original_embedding = embed_graph(self.G_full)
+        self.G_full, self.G_full_stats = uml_dict_to_graph(self.PUML)
+        self.original_embedding, self.original_model = embed_graph(self.G_full)
 
         best_individual = self.solve()
         reduced_diagram = self.extract_solution(best_individual)
@@ -120,28 +137,41 @@ class EvolAlgorithm(Algorithm):
             individual = [random.random() for _ in range(len(self.elements))]
             self.population.append(individual)
 
-    def fitness_function(self, individual):
+    def fitness_function(self, individual, a=1, b=1, c=1):
         """
         Evaluate fitness of an individual.
         """
 
-        G_shrunk = uml_dict_to_graph(self.decode_individual(individual))
+        assert self.G_full is not None, "Graph not initialized"
 
-        if len(G_shrunk) <= 2:
-            return -float("inf")
+        G_shrunk, G_shrunk_stats = uml_dict_to_graph(self.decode_individual(individual))
+
+        edges_score = 0
+
+        for key, weight in self.config["fitness"]["scores"].items():
+            full_val = self.G_full_stats.get(key, 0)
+            shrunk_val = G_shrunk_stats.get(key, 0)
+
+            # avoid division by zero
+            if full_val > 0:
+                edges_score += weight * (shrunk_val / full_val)
 
         emb_orig = self.original_embedding
-        emb_shrunk = embed_graph(G_shrunk)
+        emb_shrunk = find_embedding(self.original_model, G_shrunk)
 
         similarity = self._cosine_sim(emb_orig, emb_shrunk)
 
-        compression_ratio = (
-            (len(self.G_full) - len(G_shrunk)) / len(self.G_full)
-        )
-        compression_ratio = max(compression_ratio, 1e-8)
+        full_edges = self.G_full_stats["total_edges"]
+        shrunk_edges = G_shrunk_stats["total_edges"]
 
-        return similarity / compression_ratio
+        edge_shrink = (full_edges - shrunk_edges) / max(full_edges, 1)
+        node_shrink = (len(self.G_full) - len(G_shrunk)) / max(len(self.G_full), 1)
+        alpha = 0.5
+        shrink_ratio = alpha * edge_shrink + (1 - alpha) * node_shrink
 
+        fitness = a * similarity + b * edges_score + c * shrink_ratio
+
+        return fitness / (a + b + c)
 
     def selection(self):
         """
@@ -153,7 +183,9 @@ class EvolAlgorithm(Algorithm):
 
         for _ in range(self.population_size):
             tournament = random.sample(self.population, tournament_size)
-            tournament_fitness = [(ind, self.fitness_function(ind)) for ind in tournament]
+            tournament_fitness = [
+                (ind, self.fitness_function(ind)) for ind in tournament
+            ]
             winner = max(tournament_fitness, key=lambda x: x[1])
             selected.append(winner[0])
 
@@ -183,7 +215,6 @@ class EvolAlgorithm(Algorithm):
             if random.random() < self.mutation_rate:
                 mutated[i] = random.random()
 
-
         return mutated
 
     def solve(self):
@@ -195,7 +226,9 @@ class EvolAlgorithm(Algorithm):
 
         for generation in range(self.generations):
             print(f"Generation {generation + 1}")
-            fitness_values = [(ind, self.fitness_function(ind)) for ind in self.population]
+            fitness_values = [
+                (ind, self.fitness_function(ind)) for ind in self.population
+            ]
 
             current_best = max(fitness_values, key=lambda x: x[1])
             if current_best[1] > self.best_fitness:
@@ -216,7 +249,7 @@ class EvolAlgorithm(Algorithm):
 
                 new_population.extend([offspring1, offspring2])
 
-            self.population = new_population[:self.population_size]
+            self.population = new_population[: self.population_size]
 
         return self.best_individual
 
@@ -237,7 +270,7 @@ class EvolAlgorithm(Algorithm):
                         included_classes[key] = {
                             "id": self.PUML["classes"][key]["id"],
                             "attributes": [],
-                            "methods": []
+                            "methods": [],
                         }
 
                 elif element_type == "attribute":
@@ -246,7 +279,7 @@ class EvolAlgorithm(Algorithm):
                         included_classes[class_name] = {
                             "id": self.PUML["classes"][class_name]["id"],
                             "attributes": [],
-                            "methods": []
+                            "methods": [],
                         }
                     included_classes[class_name]["attributes"].append(data)
 
@@ -256,7 +289,7 @@ class EvolAlgorithm(Algorithm):
                         included_classes[class_name] = {
                             "id": self.PUML["classes"][class_name]["id"],
                             "attributes": [],
-                            "methods": []
+                            "methods": [],
                         }
                     included_classes[class_name]["methods"].append(data)
 
@@ -265,18 +298,21 @@ class EvolAlgorithm(Algorithm):
                     source = edge["source"]
                     target = edge["target"]
 
-                    if source in self.PUML["classes"] and target in self.PUML["classes"]:
+                    if (
+                        source in self.PUML["classes"]
+                        and target in self.PUML["classes"]
+                    ):
                         if source not in included_classes:
                             included_classes[source] = {
                                 "id": self.PUML["classes"][source]["id"],
                                 "attributes": [],
-                                "methods": []
+                                "methods": [],
                             }
                         if target not in included_classes:
                             included_classes[target] = {
                                 "id": self.PUML["classes"][target]["id"],
                                 "attributes": [],
-                                "methods": []
+                                "methods": [],
                             }
                         included_edges.append(edge)
 

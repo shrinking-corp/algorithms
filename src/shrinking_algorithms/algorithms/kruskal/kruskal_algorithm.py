@@ -3,6 +3,7 @@ import json
 from typing import Any, Dict
 from shrinking_algorithms.algorithms.abstract_algorithm import Algorithm
 
+
 class KruskalsAlgorithm(Algorithm):
     """
     Kruskal's MST algorithm for diagram shrinking.
@@ -37,7 +38,7 @@ class KruskalsAlgorithm(Algorithm):
         self.PUML = parsed_puml
         self.size = len(parsed_puml["classes"])
         self.edges = []
-        self.vertex_data = [''] * self.size
+        self.vertex_data = [""] * self.size
 
         self.extract_puml_data(parsed_puml)
         return self.solve()
@@ -133,6 +134,7 @@ class KruskalsAlgorithm(Algorithm):
         return self.extract_solution(result)
 
     def extract_solution(self, sol):
+        assert self.PUML is not None, "PUML data not initialized"
         edges = []
 
         edge_lookup = {}

@@ -6,5 +6,12 @@
   "upper_limit": 100,
   "lower_limit": 1,
   "exclusion_threshold": 0.5,
-  "inclusion_threshold": 0.6
+  "inclusion_threshold": 0.6,
+  "fitness": {
+    "scores": {
+      "class_class_edges": 0.6,
+      "class_attr_edges": 0.2,
+      "class_method_edges": 0.2
+    }
+  }
 }

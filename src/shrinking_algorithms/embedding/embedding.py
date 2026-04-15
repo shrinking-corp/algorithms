@@ -1,4 +1,5 @@
 from node2vec import Node2Vec
+from gensim.models import Word2Vec
 
 from .graph_builder import *
 
@@ -18,10 +19,14 @@ def embed_graph(G: nx.Graph, dimensions=64, walk_length=30, num_walks=100):
     :return: A numpy array representing the averaged embedding of the graph nodes.
     """
     # train node2vec
-    n2v = Node2Vec(G, dimensions=dimensions,
-                   walk_length=walk_length, num_walks=num_walks,
-                   workers=4,
-                   quiet=True)
+    n2v = Node2Vec(
+        G,
+        dimensions=dimensions,
+        walk_length=walk_length,
+        num_walks=num_walks,
+        workers=4,
+        quiet=True,
+    )
     model = n2v.fit(window=10, min_count=1)
 
     # create embedding matrix
@@ -46,10 +51,18 @@ def embed_graph_structural(G: nx.Graph) -> np.ndarray:
              features.
     :rtype: np.ndarray
     """
-    return np.concatenate([
-        normalized_degree_histogram(G, bins=5),
-        np.array([cycle_ratio(G)]),
-        np.array([hierarchy_depth(G)]),
-        scc_size_histogram(G, bins=5),
-        centrality_rank_vector(G, k=5)
-    ])
+    return np.concatenate(
+        [
+            normalized_degree_histogram(G, bins=5),
+            np.array([cycle_ratio(G)]),
+            np.array([hierarchy_depth(G)]),
+            scc_size_histogram(G, bins=5),
+            centrality_rank_vector(G, k=5),
+        ]
+    )
+
+
+def find_embedding(model: Word2Vec, G: nx.Graph):
+    node_list = list(G.nodes())
+    emb = np.vstack([model.wv[str(n)] for n in node_list])
+    return np.mean(emb, axis=0)
