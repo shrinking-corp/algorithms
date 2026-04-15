@@ -9,13 +9,14 @@ class DiagramShrinker:
 
     :param algorithm: The shrinking algorithm to use. Must be one of
         ``"kruskals"`` or ``"evol"``.
+    :param config: The config used for shrinking PlantUML diagrams as a dict.
     :param params: Additional keyword arguments passed to the algorithm.
         For ``"evol"``, supported params are ``population`` (int) and
         ``iterations`` (int).
     """
-    def __init__(self, algorithm: str, **params):
+    def __init__(self, algorithm: str, config: dict = None, **params):
         self.algorithm = algorithm
-        self.params = params
+        self.config = config if config else params
 
         self._parsed = None
         self._reduced = None
@@ -34,7 +35,7 @@ class DiagramShrinker:
         :raises TypeError: If the file cannot be parsed or the algorithm is unknown.
         :raises RuntimeError: If an unexpected error occurs during processing.
         """
-        result = process_puml(content, self.algorithm, json.dumps(self.params))
+        result = process_puml(content, self.algorithm, json.dumps(self.config))
 
         self._parsed = result.get("parsed")
         self._reduced = result.get("reduced")
@@ -78,3 +79,20 @@ class DiagramShrinker:
         :returns: The result PUML string, or ``None`` if shrink() has not been called yet.
         """
         return self._result_puml
+
+    def get_config(self) -> dict:
+        """
+        Return the config used for shrinking PlantUML diagrams as a dict.
+
+        :returns: The config used for shrinking PlantUML diagrams as a dict.
+        """
+        return self.params
+
+    def set_config(self, config: dict = None, **params):
+        """
+        Set the config used for shrinking PlantUML diagrams.
+
+        :param config: The config used for shrinking PlantUML diagrams as a dict.
+        :param params: Additional keyword arguments passed to the algorithm.
+        """
+        self.config = config if config else params

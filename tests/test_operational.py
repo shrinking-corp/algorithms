@@ -77,9 +77,10 @@ class TestGenericAlgorithm(unittest.TestCase):
         with open(puml_file_path, "r", encoding="utf-8") as file:
             content = file.read()
 
+        config = {"iterations": 6}
         algorithm = DiagramShrinker(
             algorithm="evol",
-            iterations=5
+            config=config
         )
         result = algorithm.shrink(content).get_all()
 
