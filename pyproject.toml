@@ -33,3 +33,6 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/shrinking_algorithms"]
+
+[too.hatch.build]
+ignore-vcs = true # tmp fix
