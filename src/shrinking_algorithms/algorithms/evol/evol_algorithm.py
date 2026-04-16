@@ -40,6 +40,8 @@ class EvolAlgorithm(Algorithm):
         config_path = params.get("config_path", "ga_config.json")
         self.config = self.load_config(config_path)
 
+        print(self.config)
+
         self.population_size = params.get(
             "population_size", self.config.get("population_size", 50)
         )
@@ -98,6 +100,7 @@ class EvolAlgorithm(Algorithm):
 
         base_path = os.path.dirname(os.path.abspath(__file__))
         full_path = os.path.join(base_path, config_path)
+
 
         try:
             with open(full_path, "r") as file:

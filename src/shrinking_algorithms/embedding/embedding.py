@@ -32,7 +32,7 @@ def embed_graph(G: nx.Graph, dimensions=64, walk_length=30, num_walks=100):
     # create embedding matrix
     node_list = list(G.nodes())
     emb = np.vstack([model.wv[str(n)] for n in node_list])
-    return np.mean(emb, axis=0)
+    return np.mean(emb, axis=0), model
 
 
 def embed_graph_structural(G: nx.Graph) -> np.ndarray:
