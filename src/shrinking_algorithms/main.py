@@ -1,17 +1,11 @@
 from shrinking_algorithms.parsers import PUMLParser
-from shrinking_algorithms.algorithms import KruskalFactory, EvolFactory
+from shrinking_algorithms.algorithms import AlgorithmType, Factory
 
 import os
 import json
 import tempfile
-from enum import StrEnum
 
-class Algorithm(StrEnum):
-    evolution = "evol"
-    kruskals = "kruskals"
-    none = "none"
-
-def process_puml(content: str, algorithm: str, settings: str):
+def process_puml(content: str, algorithm_type: AlgorithmType, settings: dict):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(current_dir, "parsers", "parser_config.json")
     parser = PUMLParser(config_path)
@@ -19,13 +13,8 @@ def process_puml(content: str, algorithm: str, settings: str):
     source_path = None
     output_path = None
 
-    try:
-        algorithm_settings = json.loads(settings)
-    except Exception:
-        raise TypeError("Invalid settings format")
-
-    print(algorithm)
-    print(algorithm_settings)
+    print(algorithm_type)
+    print(settings)
 
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".puml") as tmp:
@@ -38,21 +27,9 @@ def process_puml(content: str, algorithm: str, settings: str):
         if not parsed:
             raise TypeError("Unable to parse PUML file")
 
-        if algorithm == Algorithm.evolution:
-            factory = EvolFactory()
-            alg = factory.get_algorithm()
-            alg.initialize(
-                population_size=algorithm_settings.get("population", 50),
-                generations=algorithm_settings.get("iterations", 100),
-            )
-        elif algorithm == Algorithm.kruskals:
-            factory = KruskalFactory()
-            alg = factory.get_algorithm()
-            # TODO: add settigns
-        else:
-            raise TypeError("Unknown algorithm")
-
-        reduced = alg.compute(parsed)
+        creator = Factory.get_creator(algorithm_type)
+        algorithm = creator.get_algorithm(settings)
+        reduced = algorithm.compute(parsed)
 
         with tempfile.NamedTemporaryFile(
             delete=False, suffix="_reduced.puml"

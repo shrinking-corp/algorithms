@@ -1,5 +1,5 @@
 from shrinking_algorithms.main import process_puml
-from shrinking_algorithms.algorithms import AlgorithmType, _map_to_algorithm_type, _get_all_algorithm_types
+from shrinking_algorithms.algorithms import AlgorithmType, map_to_algorithm_type, get_all_algorithm_types
 
 from typing import Optional, Union
 import json
@@ -20,7 +20,7 @@ class DiagramShrinker:
         self._parsed = None
         self._reduced = None
         self._result_puml = None
-        self._algorithm = _map_to_algorithm_type(algorithm)
+        self._algorithm = map_to_algorithm_type(algorithm)
 
         self.set_config(config, **params)
 
@@ -37,9 +37,7 @@ class DiagramShrinker:
         :raises TypeError: If the file cannot be parsed or the algorithm is unknown.
         :raises RuntimeError: If an unexpected error occurs during processing.
         """
-        algorithm = str(self._algorithm) if self._algorithm != AlgorithmType.UNKNOWN else str(AlgorithmType.KRUSKAL)
-
-        result = process_puml(content, algorithm, json.dumps(self._config))
+        result = process_puml(content, self._algorithm, self._config)
 
         self._parsed = result.get("parsed")
         self._reduced = result.get("reduced")
@@ -103,5 +101,5 @@ class DiagramShrinker:
 
     @staticmethod
     def get_all_algorithms() -> list[str]:
-        algorithms = _get_all_algorithm_types()
+        algorithms = get_all_algorithm_types()
         return [alg.value for alg in algorithms]
