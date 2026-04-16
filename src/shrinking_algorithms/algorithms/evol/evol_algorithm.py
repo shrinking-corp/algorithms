@@ -40,8 +40,6 @@ class EvolAlgorithm(Algorithm):
         config_path = params.get("config_path", "ga_config.json")
         self.config = self.load_config(config_path)
 
-        print(self.config)
-
         self.population_size = params.get(
             "population_size", self.config.get("population_size", 50)
         )
@@ -181,7 +179,7 @@ class EvolAlgorithm(Algorithm):
         Tournament selection: pick random individuals and select the best.
         Returns selected parents for reproduction.
         """
-        tournament_size = 3
+        tournament_size = min(self.population_size, 3)
         selected = []
 
         for _ in range(self.population_size):
