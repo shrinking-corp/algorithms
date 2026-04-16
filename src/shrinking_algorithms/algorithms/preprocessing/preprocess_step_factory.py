@@ -1,5 +1,7 @@
+from shrinking_algorithms.algorithms.preprocessing.attribute_strategies import RandomAttributeRemovalStrategy, RemoveAttributesByVisibilityStrategy
 from shrinking_algorithms.algorithms.preprocessing.preprocess_base import PreprocessStep
 from shrinking_algorithms.algorithms.preprocessing.preprocess_step import (
+    RemoveAttributesStep,
     RemoveClassesStep,
     RemoveMethodsStep,
     RemoveEdgesStep,
@@ -53,6 +55,16 @@ class PreprocessStepFactory:
             return RemoveMethodsStep(RemoveMethodsByVisibilityStrategy(Visibility.PACKAGE))
         elif step_id == "remove_random_edges":
             return RemoveEdgesStep(RandomEdgeRemovalStrategy(0.5))
+        elif step_id == "remove_random_attributes":
+            return RemoveAttributesStep(RandomAttributeRemovalStrategy(0.5))
+        elif step_id == "remove_public_attributes": 
+            return RemoveAttributesStep(RemoveAttributesByVisibilityStrategy(Visibility.PUBLIC))
+        elif step_id == "remove_private_attributes":
+            return RemoveAttributesStep(RemoveAttributesByVisibilityStrategy(Visibility.PRIVATE))
+        elif step_id == "remove_protected_attributes":
+            return RemoveAttributesStep(RemoveAttributesByVisibilityStrategy(Visibility.PROTECTED))
+        elif step_id == "remove_package_attributes":
+            return RemoveAttributesStep(RemoveAttributesByVisibilityStrategy(Visibility.PACKAGE))
         else:
             raise ValueError(f"Unknown step id: {step_id}")
     
