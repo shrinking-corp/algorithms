@@ -1,4 +1,4 @@
-from shrinking.algorithms.algorithms.preprocessing.preprocess_base import (
+from shrinking_algorithms.algorithms.preprocessing.preprocess_base import (
     PreprocessStep,
     ClassRemovalStrategy,
     EdgeRemovalStrategy,
@@ -6,7 +6,7 @@ from shrinking.algorithms.algorithms.preprocessing.preprocess_base import (
     MethodRemovalStrategy,
 )
 
-from shrinking.algorithms.algorithms.preprocessing.types import ParsedPUML
+from shrinking_algorithms.algorithms.preprocessing.types import ParsedPUML
 from copy import deepcopy
 
 
