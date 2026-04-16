@@ -73,6 +73,14 @@ class EvolAlgorithm(Algorithm):
         self.original_embedding = None
         self.G_full = None
 
+        scores = self.config["fitness"]["scores"]
+        total = sum(scores.values())
+
+        if total <= 0:
+            raise ValueError("Scores must sum to a positive value")
+
+        self.scores = {k: (v / total) for k, v in scores.items()}
+
     def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
         """
         Run the genetic algorithm on parsed PUML data and return the reduced PUML data.
@@ -140,16 +148,29 @@ class EvolAlgorithm(Algorithm):
 
     def fitness_function(self, individual, a=1, b=1, c=1):
         """
-        Evaluate fitness of an individual.
+        Evaluate fitness of an individual. 
+
+        Supported parameters:
+        - a: scaling factor for cosine similarity
+        - b: scaling factor for edge preservation
+        - c: scaling factor for edge compression
+
+        Edge preservation can be further specified by weights defined in ga_config.json.
+        Different edge types can be made more important and thus more likely to be preserved.
         """
 
         assert self.G_full is not None, "Graph not initialized"
+        assert a + b + c > 0, "Fitness scaling factors must sum to a positive value"
+        assert a >= 0 and b >= 0 and c >= 0, "Fitness scaling factors must be positive"
 
         G_shrunk, G_shrunk_stats = uml_dict_to_graph(self.decode_individual(individual))
 
         edges_score = 0
 
-        for key, weight in self.config["fitness"]["scores"].items():
+        # preservation of edges
+        # rewards edges that are preserved 
+        # can scale which edges are more important to be preserved
+        for key, weight in self.scores.items():
             full_val = self.G_full_stats.get(key, 0)
             shrunk_val = G_shrunk_stats.get(key, 0)
 
@@ -160,8 +181,17 @@ class EvolAlgorithm(Algorithm):
         emb_orig = self.original_embedding
         emb_shrunk = find_embedding(self.original_model, G_shrunk)
 
+        # cosine similarity of embeddings
+        # should be close for similar embeddings 
+        # similar embeddings should represent structural similarity
         similarity = self._cosine_sim(emb_orig, emb_shrunk)
+        similarity = (similarity + 1 ) / 2 # normalize to [0,1]
 
+        # compression ratio 
+        # should reward compression fo the graph - edge decode_individual
+        # TODO: 
+        # i am not too sure about this and must come back to this
+        # right now it counts artificial edges too (connectors, attrs, methods)
         full_edges = self.G_full_stats["total_edges"]
         shrunk_edges = G_shrunk_stats["total_edges"]
 
@@ -218,26 +248,35 @@ class EvolAlgorithm(Algorithm):
 
         return mutated
 
-    def solve(self):
+    def solve(self, elite_size: int = 1):
         """
         Run the genetic algorithm for specified number of generations.
         Returns the best individual found.
+
+        elite_size: number of top individuals preserved each generation
         """
         self.initialize_population()
 
         for generation in range(self.generations):
             print(f"Generation {generation + 1}")
+
             fitness_values = [
                 (ind, self.fitness_function(ind)) for ind in self.population
             ]
 
-            current_best = max(fitness_values, key=lambda x: x[1])
+            fitness_values.sort(key=lambda x: x[1], reverse=True)
+
+            current_best = fitness_values[0]
             if current_best[1] > self.best_fitness:
                 self.best_fitness = current_best[1]
                 self.best_individual = current_best[0][:]
 
+            # always keep up to elite_size elites for the next gen
+            elites = [ind[:] for ind, _ in fitness_values[:elite_size]]
+
             selected = self.selection()
-            new_population = []
+
+            new_population = elites[:]  # start with elites
 
             for i in range(0, len(selected), 2):
                 parent1 = selected[i]
@@ -250,6 +289,7 @@ class EvolAlgorithm(Algorithm):
 
                 new_population.extend([offspring1, offspring2])
 
+            # Trim to population size
             self.population = new_population[: self.population_size]
 
         return self.best_individual
