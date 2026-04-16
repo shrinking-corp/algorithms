@@ -29,7 +29,7 @@ class RemoveMethodsByVisibilityStrategy(MethodRemovalStrategy):
     def select_to_remove(
         self, class_name: str, methods: list[dict], parsed_puml: ParsedPUML
     ) -> list[dict]:
-        return [method for method in methods if method["visibility"] == self.visibility]
+        return [method for method in methods if method["visibility"] == self.visibility.value]
 
 
 class RemoveGettersAndSettersStrategy(MethodRemovalStrategy):

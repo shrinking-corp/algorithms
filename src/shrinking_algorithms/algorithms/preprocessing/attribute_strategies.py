@@ -27,4 +27,4 @@ class RemoveAttributesByVisibilityStrategy(AttributeRemovalStrategy):
     def select_to_remove(
         self, class_name: str, attributes: list[dict], parsed_puml: ParsedPUML
     ) -> list[dict]:
-        return [attr for attr in attributes if attr["visibility"] == self.visibility]
+        return [attr for attr in attributes if attr["visibility"] == self.visibility.value]
