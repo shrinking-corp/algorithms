@@ -7,4 +7,4 @@ from shrinking_algorithms.algorithms.kruskal.kruskal_algorithm import KruskalsAl
 from shrinking_algorithms.algorithms.factories.evol_factory import EvolFactory
 from shrinking_algorithms.algorithms.factories.kruskal_factory import KruskalFactory
 
-from shrinking_algorithms.algorithms.types import AlgorithmType, _map_to_algorithm_type
+from shrinking_algorithms.algorithms.types import AlgorithmType, _map_to_algorithm_type, _get_all_algorithm_types

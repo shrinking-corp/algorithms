@@ -1,5 +1,5 @@
 from shrinking_algorithms.main import process_puml
-from shrinking_algorithms.algorithms import AlgorithmType, _map_to_algorithm_type
+from shrinking_algorithms.algorithms import AlgorithmType, _map_to_algorithm_type, _get_all_algorithm_types
 
 from typing import Optional, Union
 import json
@@ -100,3 +100,8 @@ class DiagramShrinker:
         :param params: Additional keyword arguments passed to the algorithm.
         """
         self._config = config if config else params
+
+    @staticmethod
+    def get_all_algorithms() -> list[str]:
+        algorithms = _get_all_algorithm_types()
+        return [alg.value for alg in algorithms]

@@ -1,6 +1,5 @@
 from shrinking_algorithms.parsers import PUMLParser
 from shrinking_algorithms.algorithms import KruskalFactory, EvolFactory
-from typing import TextIO
 
 import os
 import json

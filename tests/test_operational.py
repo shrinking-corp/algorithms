@@ -1,6 +1,5 @@
 from shrinking_algorithms import DiagramShrinker
 from shrinking_algorithms.shrinkers import KruskalDiagramShrinker, EvolDiagramShrinker
-from shrinking_algorithms.algorithms import AlgorithmType
 import os
 import json
 import unittest
