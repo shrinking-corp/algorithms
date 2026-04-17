@@ -2,7 +2,6 @@ from shrinking_algorithms.parsers import PUMLParser
 from shrinking_algorithms.algorithms import AlgorithmType, Factory
 
 import os
-import json
 import tempfile
 
 def process_puml(content: str, algorithm_type: AlgorithmType, settings: dict):

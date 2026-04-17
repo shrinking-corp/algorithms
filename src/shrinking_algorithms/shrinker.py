@@ -2,7 +2,6 @@ from shrinking_algorithms.main import process_puml
 from shrinking_algorithms.algorithms import AlgorithmType, map_to_algorithm_type, get_all_algorithm_types
 
 from typing import Optional, Union
-import json
 
 class DiagramShrinker:
     """
