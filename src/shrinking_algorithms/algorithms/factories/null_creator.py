@@ -3,5 +3,17 @@ from shrinking_algorithms.algorithms import NullAlgorithm
 
 class NullCreator(AlgorithmCreator):
 
-    def get_algorithm(self, settings: dict) -> NullAlgorithm:
+    @staticmethod
+    def get_algorithm() -> NullAlgorithm:
         return NullAlgorithm()
+
+    @staticmethod
+    def get_config() -> dict:
+        return {}
+
+    @staticmethod
+    def set_instances(algorithm: NullAlgorithm,
+                      settings: dict,
+                      config: dict
+                      ) -> None:
+        pass

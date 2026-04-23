@@ -2,7 +2,7 @@ from shrinking_algorithms.algorithms.abstract_algorithm import Algorithm
 
 from shrinking_algorithms.algorithms.evol.evol_algorithm import EvolAlgorithm
 from shrinking_algorithms.algorithms.kruskal.kruskal_algorithm import KruskalsAlgorithm
-from shrinking_algorithms.algorithms.nullalgorithm.null_algorithm import NullAlgorithm
+from shrinking_algorithms.algorithms.null_algorithm.null_algorithm import NullAlgorithm
 
 from shrinking_algorithms.algorithms.factories.evol_creator import EvolCreator
 from shrinking_algorithms.algorithms.factories.kruskal_creator import KruskalCreator
