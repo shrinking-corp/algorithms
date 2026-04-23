@@ -2,7 +2,8 @@ from shrinking_algorithms.algorithms import AlgorithmType
 from shrinking_algorithms.algorithms.factories import (
     AlgorithmCreator,
     KruskalCreator,
-    EvolCreator
+    EvolCreator,
+    NullCreator
 )
 
 class Factory():
@@ -13,6 +14,7 @@ class Factory():
             return KruskalCreator()
         elif algorithm == AlgorithmType.EVOLUTION:
             return EvolCreator()
+        elif algorithm == AlgorithmType.PREPROCESS_ONLY:
+            return NullCreator()
         else:
-            #TODO null pointer patter?
             return KruskalCreator()

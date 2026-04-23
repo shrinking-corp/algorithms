@@ -4,6 +4,7 @@ class AlgorithmType(StrEnum):
     EVOLUTION = "evol"
     KRUSKAL = "kruskals"
     UNKNOWN = "unknown"
+    PREPROCESS_ONLY = "preprocess"
 
 def map_to_algorithm_type(algorithm: str) -> AlgorithmType:
     try:

@@ -1,5 +1,7 @@
 from shrinking_algorithms.parsers import PUMLParser
 from shrinking_algorithms.algorithms import AlgorithmType, Factory
+from shrinking_algorithms.algorithms.preprocessing.preprocess_step_factory import PreprocessStepFactory
+from shrinking_algorithms.algorithms.preprocessing.preprocess_decorator import PreprocessingDecorator
 
 import os
 import tempfile
@@ -28,6 +30,12 @@ def process_puml(content: str, algorithm_type: AlgorithmType, settings: dict):
 
         creator = Factory.get_creator(algorithm_type)
         algorithm = creator.get_algorithm(settings)
+        if settings and settings.get("preprocess_steps"):
+            steps = settings["preprocess_steps"]
+            pp_factory = PreprocessStepFactory()
+            steps = [pp_factory.get_step(step) for step in steps]
+            algorithm = PreprocessingDecorator(algorithm, steps)
+
         reduced = algorithm.compute(parsed)
 
         with tempfile.NamedTemporaryFile(
