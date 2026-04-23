@@ -16,9 +16,26 @@ class KruskalsAlgorithm(Algorithm):
 
         Supported parameters:
         - config_path: path to JSON config file with weights mapping
+        - Edge weights:
+        * dependency 
+        * extension 
+        * implementation 
+        * association 
+        * aggregation 
+        * composition
         """
         config_path = params.get("config_path", "kruskals_config.json")
         self.weights_map = self.load_weights(config_path)
+
+        weights = {}
+        weights["dependency"] = params.get("dependency", self.weights_map["dependency"])
+        weights["extension"] = params.get("extension", self.weights_map["extension"])
+        weights["implementation"] = params.get("implementation", self.weights_map["implementation"])
+        weights["association"] = params.get("association", self.weights_map["association"])
+        weights["aggregation"] = params.get("aggregation", self.weights_map["aggregation"])
+        weights["composition"] = params.get("composition", self.weights_map["composition"])
+
+        self.weights_map = weights
 
         self.PUML = None
         self.size = 0
