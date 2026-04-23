@@ -13,8 +13,8 @@ class TestKruskalAlgorithm(unittest.TestCase):
         with open(puml_file_path, "r", encoding="utf-8") as file:
             content = file.read()
 
-        algorithm = KruskalDiagramShrinker()
-        result = algorithm.shrink(content).get_all()
+        algorithm = KruskalDiagramShrinker(content)
+        result = algorithm.shrink().get_all()
 
         self.assertIsNotNone(result)
 
@@ -34,8 +34,8 @@ class TestKruskalAlgorithm(unittest.TestCase):
         with open(puml_file_path, "r", encoding="utf-8") as file:
             content = file.read()
 
-        algorithm = DiagramShrinker()
-        result = algorithm.shrink(content).get_all()
+        algorithm = DiagramShrinker(content)
+        result = algorithm.shrink().get_all()
 
         self.assertIsNotNone(result)
 
@@ -55,8 +55,11 @@ class TestKruskalAlgorithm(unittest.TestCase):
         with open(puml_file_path, "r", encoding="utf-8") as file:
             content = file.read()
 
-        algorithm = DiagramShrinker(algorithm="kruskals")
-        result = algorithm.shrink(content).get_all()
+        algorithm = DiagramShrinker(
+            puml_content=content,
+            algorithm="kruskals"
+        )
+        result = algorithm.shrink().get_all()
 
         self.assertIsNotNone(result)
 
@@ -80,9 +83,10 @@ class TestGenericAlgorithm(unittest.TestCase):
 
         config = {"iterations": 6}
         algorithm = EvolDiagramShrinker(
+            puml_content=content,
             config=config
         )
-        result = algorithm.shrink(content).get_all()
+        result = algorithm.shrink().get_all()
 
         self.assertIsNotNone(result)
 
@@ -94,10 +98,11 @@ class TestGenericAlgorithm(unittest.TestCase):
             content = file.read()
 
         algorithm = DiagramShrinker(
+            puml_content=content,
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(content).get_all()
+        result = algorithm.shrink().get_all()
 
         self.assertIsNotNone(result)
 
@@ -109,10 +114,11 @@ class TestGenericAlgorithm(unittest.TestCase):
             content = file.read()
 
         algorithm = DiagramShrinker(
+            puml_content=content,
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(content).get_all()
+        result = algorithm.shrink().get_all()
 
         self.assertIsNotNone(result)
 
@@ -124,9 +130,10 @@ class TestGenericAlgorithm(unittest.TestCase):
             content = file.read()
 
         algorithm = DiagramShrinker(
+            puml_content=content,
             algorithm="evol",
             iterations=5
         )
-        result = algorithm.shrink(content).get_all()
+        result = algorithm.shrink().get_all()
 
         self.assertIsNotNone(result)

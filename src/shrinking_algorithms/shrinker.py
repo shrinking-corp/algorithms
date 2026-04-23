@@ -1,7 +1,10 @@
-from shrinking_algorithms.main import process_puml
-from shrinking_algorithms.algorithms import AlgorithmType, map_to_algorithm_type, get_all_algorithm_types
+from shrinking_algorithms.algorithms import AlgorithmType, Factory, map_to_algorithm_type, get_all_algorithm_types
+from shrinking_algorithms.parsers import PUMLParser
 
 from typing import Optional, Union
+
+import tempfile
+import os
 
 class DiagramShrinker:
     """
@@ -14,16 +17,20 @@ class DiagramShrinker:
         For ``"evol"``, supported params are ``population`` (int) and
         ``iterations`` (int).
     """
-    def __init__(self, algorithm: Union[str, AlgorithmType] = None, config: Optional[dict] = None, **params):
-        self._config = None
+    def __init__(self,
+                 puml_content: Optional[str] = None,
+                 algorithm: Union[str, AlgorithmType] = None,
+                 config: Optional[dict] = None,
+                 **params
+                 ) -> None:
+        self._puml_content: Optional[str] = puml_content
+        self._config: Optional[dict] = config if config else params
         self._parsed = None
         self._reduced = None
         self._result_puml = None
-        self._algorithm = map_to_algorithm_type(algorithm)
+        self._algorithm: AlgorithmType = map_to_algorithm_type(algorithm)
 
-        self.set_config(config, **params)
-
-    def shrink(self, content: str) -> "DiagramShrinker":
+    def shrink(self) -> "DiagramShrinker":
         """
         Shrink the given PlantUML diagram.
 
@@ -36,13 +43,65 @@ class DiagramShrinker:
         :raises TypeError: If the file cannot be parsed or the algorithm is unknown.
         :raises RuntimeError: If an unexpected error occurs during processing.
         """
-        result = process_puml(content, self._algorithm, self._config)
 
-        self._parsed = result.get("parsed")
-        self._reduced = result.get("reduced")
-        self._result_puml = result.get("result_puml")
+        # result = process_puml(content, self._algorithm, self._config)
+        #
+        # self._parsed = result.get("parsed")
+        # self._reduced = result.get("reduced")
+        # self._result_puml = result.get("result_puml")
+        #
+        # return self
 
-        return self
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(current_dir, "parsers", "parser_config.json")
+        parser = PUMLParser(config_path)
+
+        source_path = None
+        output_path = None
+
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".puml") as tmp:
+                tmp.write(self._puml_content.encode("utf-8"))
+                source_path = tmp.name
+
+            parsed = parser.parse_file(
+                source_path
+            )
+            if not parsed:
+                raise TypeError("Unable to parse PUML file")
+
+            creator = Factory.get_creator(self._algorithm)
+            algorithm = creator.initialize_and_get_algorithm(self._config)
+            reduced = algorithm.compute(parsed)
+
+            with tempfile.NamedTemporaryFile(
+                    delete=False, suffix="_reduced.puml"
+            ) as tmp_out:
+                output_path = tmp_out.name
+            parser.reparse_file(source_path, output_path, reduced)
+            with open(output_path, "r", encoding="utf-8") as f:
+                result = f.read()
+
+            self._parsed = parsed
+            self._reduced = reduced
+            self._result_puml = result
+
+            return self
+
+        except Exception as e:
+            raise RuntimeError(e.__str__())
+
+        finally:
+            if source_path and os.path.exists(source_path):
+                try:
+                    os.remove(source_path)
+                except:
+                    pass
+            if output_path and os.path.exists(output_path):
+                try:
+                    os.remove(output_path)
+                except:
+                    pass
 
     def get_all(self) -> dict[str, Optional[str]]:
         """
@@ -88,15 +147,6 @@ class DiagramShrinker:
         :returns: The config used for shrinking PlantUML diagrams as a dict.
         """
         return self._config
-
-    def set_config(self, config: dict = None, **params) -> None:
-        """
-        Set the config used for shrinking PlantUML diagrams.
-
-        :param config: The config used for shrinking PlantUML diagrams as a dict.
-        :param params: Additional keyword arguments passed to the algorithm.
-        """
-        self._config = config if config else params
 
     @staticmethod
     def get_all_algorithms() -> list[str]:

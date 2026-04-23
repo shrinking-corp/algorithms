@@ -1,5 +1,3 @@
-import os
-import json
 from typing import Any, Dict
 from shrinking_algorithms.algorithms.abstract_algorithm import Algorithm
 
