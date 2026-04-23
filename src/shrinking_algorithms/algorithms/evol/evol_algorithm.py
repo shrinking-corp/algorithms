@@ -1,8 +1,7 @@
 import json
 import os
 import random
-from typing import Any, Dict
-from pathlib import Path
+from typing import Any, Dict, Optional
 
 import numpy as np
 
@@ -23,63 +22,21 @@ class EvolAlgorithm(Algorithm):
     Values 0-0.5: element excluded
     Values 0.6-1: element included
     """
-
-    def initialize(self, **params: Any) -> None:
-        """
-        Initialize the algorithm with parameters.
-
-        Supported parameters:
-        - config_path: path to JSON config file
-        - population_size: size of GA population
-        - generations: number of generations to run
-        - mutation_rate: probability of mutation
-        - crossover_rate: probability of crossover
-        - exclusion_threshold: threshold below which elements are excluded
-        - inclusion_threshold: threshold above which elements are included
-        """
-        config_path = params.get("config_path", "ga_config.json")
-        self.config = self.load_config(config_path)
-
-        self.population_size = params.get(
-            "population_size", self.config.get("population_size", 50)
-        )
-        self.generations = params.get(
-            "generations", self.config.get("generations", 100)
-        )
-        self.mutation_rate = params.get(
-            "mutation_rate", self.config.get("mutation_rate", 0.1)
-        )
-        self.crossover_rate = params.get(
-            "crossover_rate", self.config.get("crossover_rate", 0.7)
-        )
-        self.exclusion_threshold = params.get(
-            "exclusion_threshold", self.config.get("exclusion_threshold", 0.5)
-        )
-        self.inclusion_threshold = params.get(
-            "inclusion_threshold", self.config.get("inclusion_threshold", 0.6)
-        )
-
-        upper_limit = params.get("upper_limit", self.config.get("upper_limit", 100))
-        lower_limit = params.get("lower_limit", self.config.get("lower_limit", 1))
-
-        self.population_size = max(lower_limit, min(upper_limit, self.population_size))
-        self.generations = max(lower_limit, min(upper_limit, self.generations))
-
-        self.elements = []
-        self.element_types = []
-        self.population = []
+    def __init_(self):
+        self.population_size: Optional[int] = None
+        self.generations: Optional[int] = None
+        self.mutation_rate: Optional[float] = None
+        self.crossover_rate: Optional[float] = None
+        self.exclusion_threshold: Optional[float] = None
+        self.inclusion_threshold: Optional[float] = None
+        self.elements = None
+        self.element_types = None
+        self.population = None
         self.best_individual = None
-        self.best_fitness = -float("inf")
+        self.best_fitness = None
         self.original_embedding = None
         self.G_full = None
-
-        scores = self.config["fitness"]["scores"]
-        total = sum(scores.values())
-
-        if total <= 0:
-            raise ValueError("Scores must sum to a positive value")
-
-        self.scores = {k: (v / total) for k, v in scores.items()}
+        self.scores = None
 
     def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
         """

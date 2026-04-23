@@ -14,5 +14,5 @@ class Factory():
         elif algorithm == AlgorithmType.EVOLUTION:
             return EvolCreator()
         else:
-            #TODO null pointer patter?
+            #TODO null object patter?
             return KruskalCreator()

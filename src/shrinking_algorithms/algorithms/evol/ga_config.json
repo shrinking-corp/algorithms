@@ -1,6 +1,6 @@
 {
   "population_size": 50,
-  "generations": 10,
+  "generations": 100,
   "mutation_rate": 0.1,
   "crossover_rate": 0.7,
   "upper_limit": 100,

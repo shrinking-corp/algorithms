@@ -27,7 +27,7 @@ def process_puml(content: str, algorithm_type: AlgorithmType, settings: dict):
             raise TypeError("Unable to parse PUML file")
 
         creator = Factory.get_creator(algorithm_type)
-        algorithm = creator.get_algorithm(settings)
+        algorithm = creator.initialize_and_get_algorithm(settings)
         reduced = algorithm.compute(parsed)
 
         with tempfile.NamedTemporaryFile(

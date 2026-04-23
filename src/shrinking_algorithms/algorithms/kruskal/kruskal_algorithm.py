@@ -10,20 +10,12 @@ class KruskalsAlgorithm(Algorithm):
     Implements ShrinkingAlgorithm interface.
     """
 
-    def initialize(self, **params: Any) -> None:
-        """
-        Initialize the algorithm with parameters.
-
-        Supported parameters:
-        - config_path: path to JSON config file with weights mapping
-        """
-        config_path = params.get("config_path", "kruskals_config.json")
-        self.weights_map = self.load_weights(config_path)
-
+    def __init__(self):
+        self.weights_map = None
         self.PUML = None
-        self.size = 0
-        self.edges = []
-        self.vertex_data = []
+        self.size = None
+        self.edges = None
+        self.vertex_data = None
 
     def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -42,20 +34,6 @@ class KruskalsAlgorithm(Algorithm):
 
         self.extract_puml_data(parsed_puml)
         return self.solve()
-
-    def load_weights(self, config_path):
-        """Load weights mapping from JSON config file."""
-        # in docker container paths are different
-        base_path = os.path.dirname(__file__)
-        full_path = os.path.join(base_path, config_path)
-
-        try:
-            with open(full_path, "r") as file:
-                config = json.load(file)
-                return config.get("weights", {})
-        except Exception as e:
-            print(f"Error loading config file: {e}")
-            return {}
 
     def get_weight(self, association_type):
         """Get weight for given association type from config."""
