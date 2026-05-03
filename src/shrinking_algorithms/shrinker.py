@@ -1,9 +1,9 @@
 from shrinking_algorithms.algorithms import AlgorithmType, Factory, map_to_algorithm_type, get_all_algorithm_types
 from shrinking_algorithms.parsers import PUMLParser
 
-from typing import Optional, Union
+from typing import Optional, Union, Self
+from pathlib import Path
 
-import tempfile
 import os
 
 class DiagramShrinker:
@@ -18,19 +18,20 @@ class DiagramShrinker:
         ``iterations`` (int).
     """
     def __init__(self,
-                 puml_content: Optional[str] = None,
+                 puml_content: str,
                  algorithm: Union[str, AlgorithmType] = None,
                  config: Optional[dict] = None,
                  **params
                  ) -> None:
-        self._puml_content: Optional[str] = puml_content
+        self._puml_content: str = puml_content
         self._config: Optional[dict] = config if config else params
+        self._algorithm: AlgorithmType = map_to_algorithm_type(algorithm)
+
         self._parsed = None
         self._reduced = None
         self._result_puml = None
-        self._algorithm: AlgorithmType = map_to_algorithm_type(algorithm)
 
-    def shrink(self) -> "DiagramShrinker":
+    def shrink(self) -> Self:
         """
         Shrink the given PlantUML diagram.
 
@@ -38,35 +39,16 @@ class DiagramShrinker:
         algorithm, and stores the results on the instance. Returns ``self``
         to allow method chaining.
 
-        :param content: The PlantUML diagram as a string.
         :returns: The instance itself, allowing chained getter calls.
         :raises TypeError: If the file cannot be parsed or the algorithm is unknown.
         :raises RuntimeError: If an unexpected error occurs during processing.
         """
-
-        # result = process_puml(content, self._algorithm, self._config)
-        #
-        # self._parsed = result.get("parsed")
-        # self._reduced = result.get("reduced")
-        # self._result_puml = result.get("result_puml")
-        #
-        # return self
-
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(current_dir, "parsers", "parser_config.json")
-        parser = PUMLParser(config_path)
-
-        source_path = None
-        output_path = None
+        current_dir = Path(__file__).resolve().parent
+        config_path = current_dir / "parsers" / "parser_config.json"
+        parser = PUMLParser(str(config_path))
 
         try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".puml") as tmp:
-                tmp.write(self._puml_content.encode("utf-8"))
-                source_path = tmp.name
-
-            parsed = parser.parse_file(
-                source_path
-            )
+            parsed = parser.parse_file(self._puml_content)
             if not parsed:
                 raise TypeError("Unable to parse PUML file")
 
@@ -74,34 +56,17 @@ class DiagramShrinker:
             algorithm = creator.initialize_and_get_algorithm(self._config)
             reduced = algorithm.compute(parsed)
 
-            with tempfile.NamedTemporaryFile(
-                    delete=False, suffix="_reduced.puml"
-            ) as tmp_out:
-                output_path = tmp_out.name
-            parser.reparse_file(source_path, output_path, reduced)
-            with open(output_path, "r", encoding="utf-8") as f:
-                result = f.read()
+            result_puml_list = parser.reparse_file(self._puml_content, reduced)
+            result_puml_str = "\n".join(result_puml_list)
 
             self._parsed = parsed
             self._reduced = reduced
-            self._result_puml = result
+            self._result_puml = result_puml_str
 
             return self
 
         except Exception as e:
             raise RuntimeError(e.__str__())
-
-        finally:
-            if source_path and os.path.exists(source_path):
-                try:
-                    os.remove(source_path)
-                except:
-                    pass
-            if output_path and os.path.exists(output_path):
-                try:
-                    os.remove(output_path)
-                except:
-                    pass
 
     def get_all(self) -> dict[str, Optional[str]]:
         """
