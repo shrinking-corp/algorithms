@@ -3,6 +3,7 @@ from enum import StrEnum
 class AlgorithmType(StrEnum):
     EVOLUTION = "evol"
     KRUSKAL = "kruskals"
+    NULL = "null"
     UNKNOWN = "unknown"
 
 def map_to_algorithm_type(algorithm: str) -> AlgorithmType:

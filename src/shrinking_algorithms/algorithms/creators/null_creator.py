@@ -1,4 +1,4 @@
-from shrinking_algorithms.algorithms.factories import AlgorithmCreator
+from shrinking_algorithms.algorithms.creators import AlgorithmCreator
 from shrinking_algorithms.algorithms import NullAlgorithm
 
 class NullCreator(AlgorithmCreator):

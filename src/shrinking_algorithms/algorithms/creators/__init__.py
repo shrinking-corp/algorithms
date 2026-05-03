@@ -1,0 +1,5 @@
+from shrinking_algorithms.algorithms.creators.abstract_creator import AlgorithmCreator
+
+from shrinking_algorithms.algorithms.creators.kruskal_creator import KruskalCreator
+from shrinking_algorithms.algorithms.creators.evol_creator import EvolCreator
+from shrinking_algorithms.algorithms.creators.null_creator import NullCreator
