@@ -1,9 +1,9 @@
 import re
 
-from app.services.puml_interpreter.context import InterpreterContext
-from app.services.puml_interpreter.exceptions import PumlParseException
-from app.services.puml_interpreter.expression import Expression
-from app.services.puml_interpreter.types import EdgeExtractor
+from shrinking_algorithms.parsers.puml_interpreter.context import InterpreterContext
+from shrinking_algorithms.parsers.puml_interpreter.exceptions import PumlParseException
+from shrinking_algorithms.parsers.puml_interpreter.expression import Expression
+from shrinking_algorithms.parsers.puml_interpreter.types import EdgeExtractor
 
 
 class RelationExpression(Expression):

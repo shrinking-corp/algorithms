@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from app.services.puml_interpreter.context import InterpreterContext
+from shrinking_algorithms.parsers.puml_interpreter.context import InterpreterContext
 
 
 class Expression(ABC):
