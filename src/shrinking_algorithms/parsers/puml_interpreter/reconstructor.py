@@ -35,6 +35,8 @@ class PumlReconstructor:
         output_lines: list[str] = []
         in_block_comment = False
         skip_class_body = False
+        current_class: str | None = None
+        in_class_body = False
         brace_depth = 0
 
         for line in original_lines:
@@ -44,6 +46,29 @@ class PumlReconstructor:
                 brace_depth += cleaned_line.count("{") - cleaned_line.count("}")
                 if brace_depth <= 0:
                     skip_class_body = False
+                continue
+
+            if in_class_body and current_class is not None:
+                stripped_line = cleaned_line.strip()
+
+                if not stripped_line:
+                    output_lines.append(line)
+                    continue
+
+                if stripped_line == "}":
+                    output_lines.append(line)
+                    brace_depth += cleaned_line.count("{") - cleaned_line.count("}")
+                    if brace_depth <= 0:
+                        current_class = None
+                        in_class_body = False
+                    continue
+
+                member = self._parse_class_member(cleaned_line)
+                if member is None or self._is_allowed_member(
+                    member,
+                    data.get("classes", {}).get(current_class, {}),
+                ):
+                    output_lines.append(line)
                 continue
 
             if not cleaned_line.strip():
@@ -59,6 +84,13 @@ class PumlReconstructor:
                         skip_class_body = brace_depth > 0
                     continue
                 output_lines.append(line)
+                if has_body:
+                    current_class = class_name
+                    in_class_body = True
+                    brace_depth = cleaned_line.count("{") - cleaned_line.count("}")
+                    if brace_depth <= 0:
+                        current_class = None
+                        in_class_body = False
                 continue
 
             edge_info = self._extract_edge_info(cleaned_line)
@@ -70,6 +102,59 @@ class PumlReconstructor:
             output_lines.append(line)
 
         return "\n".join(output_lines)
+
+    def _parse_class_member(self, line: str) -> dict | None:
+        line = line.strip()
+        if not line or line.startswith("//") or line.startswith("'"):
+            return None
+
+        visibility_map = {"+": "public", "-": "private", "#": "protected", "~": "package"}
+        visibility = "public"
+
+        if line[0] in visibility_map:
+            visibility = visibility_map[line[0]]
+            line = line[1:].strip()
+
+        if "(" in line and ")" in line:
+            method_match = re.match(r"([a-zA-Z_]\w*)\s*\((.*?)\)", line)
+            if method_match:
+                method_name = method_match.group(1)
+                params = method_match.group(2).strip()
+                return {
+                    "type": "method",
+                    "name": method_name,
+                    "visibility": visibility,
+                    "signature": f"{method_name}({params})",
+                }
+            return None
+
+        attr_match = re.match(r"([a-zA-Z_]\w*)\s*(?::\s*(.+))?", line)
+        if attr_match:
+            return {
+                "type": "attribute",
+                "name": attr_match.group(1),
+                "visibility": visibility,
+                "datatype": attr_match.group(2).strip() if attr_match.group(2) else "",
+            }
+
+        return None
+
+    def _is_allowed_member(self, member: dict, class_data: dict) -> bool:
+        if member.get("type") == "attribute":
+            return any(
+                attr.get("name") == member.get("name")
+                and attr.get("visibility") == member.get("visibility")
+                for attr in class_data.get("attributes", [])
+            )
+
+        if member.get("type") == "method":
+            return any(
+                method.get("signature") == member.get("signature")
+                and method.get("visibility") == member.get("visibility")
+                for method in class_data.get("methods", [])
+            )
+
+        return False
 
     def _extract_class_declaration(self, line: str) -> tuple[str, bool] | None:
         candidate = line.lstrip()
@@ -146,4 +231,3 @@ class PumlReconstructor:
             i += 1
 
         return result, in_block_comment
-
