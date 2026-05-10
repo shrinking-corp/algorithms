@@ -54,7 +54,8 @@ class KruskalsAlgorithm(Algorithm):
             source = edge["source"]
             target = edge["target"]
 
-            association_type = edge.get("type", "association")
+            relation = edge.get("relation", "association")
+            association_type = relation.lower().strip().split("-")[0]
             weight = self.get_weight(association_type)
 
             if source in PUML["classes"] and target in PUML["classes"]:
