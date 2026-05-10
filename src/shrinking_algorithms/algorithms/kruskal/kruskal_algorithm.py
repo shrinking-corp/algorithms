@@ -118,6 +118,7 @@ class KruskalsAlgorithm(Algorithm):
         assert self.PUML is not None, "PUML data not initialized"
         edges = []
         edge_lookup = {}
+
         for edge in self.PUML["edges"]:
             source = edge["source"]
             target = edge["target"]
@@ -127,8 +128,10 @@ class KruskalsAlgorithm(Algorithm):
             v = self.class_to_index[target]
             edge_lookup[(u, v)] = edge
             edge_lookup[(v, u)] = edge
+
         for u, v, weight in sol:
             original_edge = edge_lookup.get((u, v), edge_lookup.get((v, u)))
             if original_edge:
                 edges.append(original_edge)
+
         return {"classes": self.PUML["classes"], "edges": edges}

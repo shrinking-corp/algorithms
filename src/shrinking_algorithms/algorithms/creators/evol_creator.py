@@ -29,10 +29,18 @@ class EvolCreator(AlgorithmCreator):
             "population_size",
             config.get("population_size")
         )
+
+        if population_size is None:
+            population_size = config.get("population_size")
+
         generations = settings.get(
             "generations",
             config.get("generations")
         )
+
+        if generations is None:
+            generations = config.get("generations")
+
         algorithm.mutation_rate = settings.get(
             "mutation_rate",
             config.get("mutation_rate")
@@ -76,3 +84,8 @@ class EvolCreator(AlgorithmCreator):
             raise ValueError("Scores must sum to a positive value")
 
         algorithm.scores = {k: (v / total) for k, v in scores.items()}
+        algorithm.fitness_coefficients = config.get("fitness").get("coefficients")
+
+
+
+
