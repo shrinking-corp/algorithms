@@ -1,5 +1,7 @@
 from shrinking_algorithms.algorithms import AlgorithmType, Factory, map_to_algorithm_type, get_all_algorithm_types
 from shrinking_algorithms.parsers import PUMLParser
+from shrinking_algorithms.algorithms.preprocessing.preprocess_decorator import PreprocessingDecorator
+from shrinking_algorithms.algorithms.preprocessing.preprocess_step_factory import PreprocessStepFactory
 
 from typing import Optional, Union, Self
 from pathlib import Path
@@ -54,6 +56,13 @@ class DiagramShrinker:
 
             creator = Factory.get_creator(self._algorithm)
             algorithm = creator.initialize_and_get_algorithm(self._config)
+
+            if self._config and self._config.get("preprocess_steps"):
+                steps = self._config["preprocess_steps"]
+                pp_factory = PreprocessStepFactory()
+                steps = [pp_factory.get_step(step) for step in steps]
+                algorithm = PreprocessingDecorator(algorithm, steps)
+
             reduced = algorithm.compute(parsed)
 
             result_puml_str = parser.reparse_puml(self._puml_content, reduced)

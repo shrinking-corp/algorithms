@@ -22,7 +22,7 @@ class EvolAlgorithm(Algorithm):
     Values 0-0.5: element excluded
     Values 0.6-1: element included
     """
-    def __init_(self):
+    def __init__(self):
         self.population_size: Optional[int] = None
         self.generations: Optional[int] = None
         self.mutation_rate: Optional[float] = None
