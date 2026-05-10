@@ -1,5 +1,3 @@
-import os
-import json
 from typing import Any, Dict
 from shrinking_algorithms.algorithms.abstract_algorithm import Algorithm
 
@@ -10,37 +8,13 @@ class KruskalsAlgorithm(Algorithm):
     Implements ShrinkingAlgorithm interface.
     """
 
-    def initialize(self, **params: Any) -> None:
-        """
-        Initialize the algorithm with parameters.
-
-        Supported parameters:
-        - config_path: path to JSON config file with weights mapping
-        - Edge weights:
-        * dependency 
-        * extension 
-        * implementation 
-        * association 
-        * aggregation 
-        * composition
-        """
-        config_path = params.get("config_path", "kruskals_config.json")
-        self.weights_map = self.load_weights(config_path)
-
-        weights = {}
-        weights["dependency"] = params.get("dependency", self.weights_map["dependency"])
-        weights["extension"] = params.get("extension", self.weights_map["extension"])
-        weights["implementation"] = params.get("implementation", self.weights_map["implementation"])
-        weights["association"] = params.get("association", self.weights_map["association"])
-        weights["aggregation"] = params.get("aggregation", self.weights_map["aggregation"])
-        weights["composition"] = params.get("composition", self.weights_map["composition"])
-
-        self.weights_map = weights
-
+    def __init__(self):
+        self.weights_map = None
         self.PUML = None
-        self.size = 0
-        self.edges = []
-        self.vertex_data = []
+        self.size = None
+        self.edges = None
+        self.vertex_data = None
+        self.class_to_index = {}
 
     def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -56,23 +30,13 @@ class KruskalsAlgorithm(Algorithm):
         self.size = len(parsed_puml["classes"])
         self.edges = []
         self.vertex_data = [""] * self.size
+        self.class_to_index = {
+            class_name: index
+            for index, class_name in enumerate(parsed_puml["classes"].keys())
+        }
 
         self.extract_puml_data(parsed_puml)
         return self.solve()
-
-    def load_weights(self, config_path):
-        """Load weights mapping from JSON config file."""
-        # in docker container paths are different
-        base_path = os.path.dirname(__file__)
-        full_path = os.path.join(base_path, config_path)
-
-        try:
-            with open(full_path, "r") as file:
-                config = json.load(file)
-                return config.get("weights", {})
-        except Exception as e:
-            print(f"Error loading config file: {e}")
-            return {}
 
     def get_weight(self, association_type):
         """Get weight for given association type from config."""
@@ -87,8 +51,7 @@ class KruskalsAlgorithm(Algorithm):
         return 1
 
     def extract_puml_data(self, PUML):
-        for class_name, class_info in PUML["classes"].items():
-            index = class_info["id"]
+        for class_name, index in self.class_to_index.items():
             self.add_vertex_data(index, class_name)
 
         for edge in PUML["edges"]:
@@ -99,9 +62,9 @@ class KruskalsAlgorithm(Algorithm):
             association_type = relation.lower().strip().split("-")[0]
             weight = self.get_weight(association_type)
 
-            if source in PUML["classes"] and target in PUML["classes"]:
-                u = PUML["classes"][source]["id"]
-                v = PUML["classes"][target]["id"]
+            if source in self.class_to_index and target in self.class_to_index:
+                u = self.class_to_index[source]
+                v = self.class_to_index[target]
                 self.add_edge(u, v, weight)
 
     def add_edge(self, u, v, weight):
@@ -154,29 +117,18 @@ class KruskalsAlgorithm(Algorithm):
     def extract_solution(self, sol):
         assert self.PUML is not None, "PUML data not initialized"
         edges = []
-
         edge_lookup = {}
         for edge in self.PUML["edges"]:
             source = edge["source"]
             target = edge["target"]
-            u = self.PUML["classes"][source]["id"]
-            v = self.PUML["classes"][target]["id"]
+            if source not in self.class_to_index or target not in self.class_to_index:
+                continue
+            u = self.class_to_index[source]
+            v = self.class_to_index[target]
             edge_lookup[(u, v)] = edge
             edge_lookup[(v, u)] = edge
-
-        edge_lookup = {}
-        for edge in self.PUML["edges"]:
-            source = edge["source"]
-            target = edge["target"]
-            u = self.PUML["classes"][source]["id"]
-            v = self.PUML["classes"][target]["id"]
-            edge_lookup[(u, v)] = edge
-            edge_lookup[(v, u)] = edge
-
         for u, v, weight in sol:
             original_edge = edge_lookup.get((u, v), edge_lookup.get((v, u)))
-
             if original_edge:
                 edges.append(original_edge)
-
         return {"classes": self.PUML["classes"], "edges": edges}
