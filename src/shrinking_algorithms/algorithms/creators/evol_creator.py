@@ -77,14 +77,59 @@ class EvolCreator(AlgorithmCreator):
         algorithm.original_embedding = None
         algorithm.G_full = None
 
-        scores = config.get("fitness").get("scores")
-        total = sum(scores.values())
+        # "fitness": {
+        #   "scores": {
+        #     "class_class_edges": 0.6,
+        #     "class_attr_edges": 0.2,
+        #     "class_method_edges": 0.2
+        #   },
+        #   "coefficients": {
+        #     "similarity": 1,
+        #     "edges": 1,
+        #     "shrink": 1
+        #   }
+        # }
 
-        if total <= 0:
-            raise ValueError("Scores must sum to a positive value")
+        # ga_config defaults must be set
+        if config.get("fitness") is None or config.get("fitness").get("scores") is None:
+            raise ValueError("Invalid ga_config. Missing scores")
 
-        algorithm.scores = {k: (v / total) for k, v in scores.items()}
-        algorithm.fitness_coefficients = config.get("fitness").get("coefficients")
+        if config.get("fitness") is None or config.get("fitness").get("coefficients") is None:
+            raise ValueError("Invalid ga_config. Missing coefficients")
+
+        fitness_config = settings.get("fitness")
+
+        if fitness_config is not None:
+            scores = fitness_config.get("scores")
+
+            if scores is None:
+                scores = config.get("fitness").get("scores")
+
+            total = sum(scores.values())
+
+            if total <= 0:
+                raise ValueError("Scores must sum to a positive value")
+
+            algorithm.scores = {k: (v / total) for k, v in scores.items()}
+
+            coefficients = fitness_config.get("coefficients")
+
+            if coefficients is None: 
+                coefficients = config.get("fitness").get("coefficients")
+
+            algorithm.fitness_coefficients = coefficients
+
+        else: 
+            scores = config.get("fitness").get("scores")
+            total = sum(scores.values())
+
+            if total <= 0:
+                raise ValueError("Scores must sum to a positive value")
+
+            algorithm.scores = {k: (v / total) for k, v in scores.items()}
+
+            coefficients = config.get("fitness").get("coefficients")
+            algorithm.fitness_coefficients = coefficients
 
 
 
