@@ -14,6 +14,7 @@ class KruskalsAlgorithm(Algorithm):
         self.size = None
         self.edges = None
         self.vertex_data = None
+        self.class_to_index = {}
 
     def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -29,6 +30,10 @@ class KruskalsAlgorithm(Algorithm):
         self.size = len(parsed_puml["classes"])
         self.edges = []
         self.vertex_data = [""] * self.size
+        self.class_to_index = {
+            class_name: index
+            for index, class_name in enumerate(parsed_puml["classes"].keys())
+        }
 
         self.extract_puml_data(parsed_puml)
         return self.solve()
@@ -46,8 +51,7 @@ class KruskalsAlgorithm(Algorithm):
         return 1
 
     def extract_puml_data(self, PUML):
-        for class_name, class_info in PUML["classes"].items():
-            index = class_info["id"]
+        for class_name, index in self.class_to_index.items():
             self.add_vertex_data(index, class_name)
 
         for edge in PUML["edges"]:
@@ -58,9 +62,9 @@ class KruskalsAlgorithm(Algorithm):
             association_type = relation.lower().strip().split("-")[0]
             weight = self.get_weight(association_type)
 
-            if source in PUML["classes"] and target in PUML["classes"]:
-                u = PUML["classes"][source]["id"]
-                v = PUML["classes"][target]["id"]
+            if source in self.class_to_index and target in self.class_to_index:
+                u = self.class_to_index[source]
+                v = self.class_to_index[target]
                 self.add_edge(u, v, weight)
 
     def add_edge(self, u, v, weight):
@@ -113,28 +117,20 @@ class KruskalsAlgorithm(Algorithm):
     def extract_solution(self, sol):
         assert self.PUML is not None, "PUML data not initialized"
         edges = []
-
         edge_lookup = {}
+
         for edge in self.PUML["edges"]:
             source = edge["source"]
             target = edge["target"]
-            u = self.PUML["classes"][source]["id"]
-            v = self.PUML["classes"][target]["id"]
-            edge_lookup[(u, v)] = edge
-            edge_lookup[(v, u)] = edge
-
-        edge_lookup = {}
-        for edge in self.PUML["edges"]:
-            source = edge["source"]
-            target = edge["target"]
-            u = self.PUML["classes"][source]["id"]
-            v = self.PUML["classes"][target]["id"]
+            if source not in self.class_to_index or target not in self.class_to_index:
+                continue
+            u = self.class_to_index[source]
+            v = self.class_to_index[target]
             edge_lookup[(u, v)] = edge
             edge_lookup[(v, u)] = edge
 
         for u, v, weight in sol:
             original_edge = edge_lookup.get((u, v), edge_lookup.get((v, u)))
-
             if original_edge:
                 edges.append(original_edge)
 

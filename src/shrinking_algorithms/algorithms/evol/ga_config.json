@@ -1,6 +1,6 @@
 {
-  "population_size": 50,
-  "generations": 100,
+  "population_size": 10,
+  "generations": 5,
   "mutation_rate": 0.1,
   "crossover_rate": 0.7,
   "upper_limit": 100,
@@ -12,6 +12,11 @@
       "class_class_edges": 0.6,
       "class_attr_edges": 0.2,
       "class_method_edges": 0.2
+    },
+    "coefficients": {
+      "similarity": 1,
+      "edges": 1,
+      "shrink": 1
     }
   }
 }

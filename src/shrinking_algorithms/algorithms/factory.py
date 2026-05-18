@@ -14,7 +14,7 @@ class Factory():
             return KruskalCreator()
         elif algorithm == AlgorithmType.EVOLUTION:
             return EvolCreator()
-        elif algorithm == AlgorithmType.NULL:
+        elif algorithm == AlgorithmType.PREPROCESS_ONLY:
             return NullCreator()
         else:
             return KruskalCreator()

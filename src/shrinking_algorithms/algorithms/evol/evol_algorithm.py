@@ -22,7 +22,7 @@ class EvolAlgorithm(Algorithm):
     Values 0-0.5: element excluded
     Values 0.6-1: element included
     """
-    def __init_(self):
+    def __init__(self):
         self.population_size: Optional[int] = None
         self.generations: Optional[int] = None
         self.mutation_rate: Optional[float] = None
@@ -37,6 +37,7 @@ class EvolAlgorithm(Algorithm):
         self.original_embedding = None
         self.G_full = None
         self.scores = None
+        self.fitness_coefficients = None
 
     def compute(self, parsed_puml: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -103,18 +104,24 @@ class EvolAlgorithm(Algorithm):
             individual = [random.random() for _ in range(len(self.elements))]
             self.population.append(individual)
 
-    def fitness_function(self, individual, a=1, b=1, c=1):
+    def fitness_function(self, individual):
         """
         Evaluate fitness of an individual. 
 
-        Supported parameters:
-        - a: scaling factor for cosine similarity
-        - b: scaling factor for edge preservation
-        - c: scaling factor for edge compression
+        Fitness value is calculated from:
+            - cosine similarity factor
+            - edge preservation factor
+            - shrink factor
+
+        These factors can be further scaled by the fitness coefficients defined in ga_config.json.
 
         Edge preservation can be further specified by weights defined in ga_config.json.
         Different edge types can be made more important and thus more likely to be preserved.
         """
+
+        a = self.fitness_coefficients["similarity"]
+        b = self.fitness_coefficients["edges"]
+        c = self.fitness_coefficients["shrink"]
 
         assert self.G_full is not None, "Graph not initialized"
         assert a + b + c > 0, "Fitness scaling factors must sum to a positive value"
