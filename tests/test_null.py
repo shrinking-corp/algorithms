@@ -7,8 +7,8 @@ import unittest
 class TestNullAlgorithm(unittest.TestCase):
 
     def test_singleton(self):
-        algorithm1 = NullCreator.get_algorithm()
-        algorithm2 = NullCreator.get_algorithm()
+        algorithm1 = NullCreator.create_instance()
+        algorithm2 = NullCreator.create_instance()
         self.assertEqual(algorithm1, algorithm2)
 
     def test_null_algorithm_file1(self):

@@ -6,11 +6,11 @@ import json
 class EvolCreator(AlgorithmCreator):
 
     @staticmethod
-    def get_algorithm() -> EvolAlgorithm:
+    def create_instance() -> EvolAlgorithm:
         return EvolAlgorithm()
 
     @staticmethod
-    def get_config() -> dict:
+    def load_default_config() -> dict:
         current_file = Path(__file__).resolve()
         parent_dir = current_file.parent.parent
         config_file = parent_dir / "evol" / "ga_config.json"
@@ -21,7 +21,7 @@ class EvolCreator(AlgorithmCreator):
         return config
 
     @staticmethod
-    def set_instances(algorithm: EvolAlgorithm,
+    def set_hyperparameters(algorithm: EvolAlgorithm,
                       settings: dict,
                       config: dict
                       ) -> None:

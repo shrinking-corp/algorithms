@@ -53,7 +53,7 @@ class DiagramShrinker:
                 raise TypeError("Unable to parse PUML file")
 
             creator = Factory.get_creator(self._algorithm)
-            algorithm = creator.initialize_and_get_algorithm(self._config)
+            algorithm = creator.create_algorithm(self._config)
             reduced = algorithm.compute(parsed)
 
             result_puml_list = parser.reparse_file(self._puml_content, reduced)

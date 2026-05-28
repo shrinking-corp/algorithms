@@ -3,26 +3,26 @@ from shrinking_algorithms.algorithms import Algorithm
 
 class AlgorithmCreator(ABC):
 
-    def initialize_and_get_algorithm(self, settings: dict) -> Algorithm:
-        algorithm = self.get_algorithm()
-        config = self.get_config()
-        self.set_instances(algorithm, settings, config)
+    def create_algorithm(self, settings: dict) -> Algorithm:
+        algorithm = self.create_instance()
+        config = self.load_default_config()
+        self.set_hyperparameters(algorithm, settings, config)
         return algorithm
 
     @staticmethod
     @abstractmethod
-    def get_algorithm() -> Algorithm:
-        raise NotImplemented("not implemented")
+    def create_instance() -> Algorithm:
+        raise NotImplementedError("Method in abstract class that's not implemented.")
 
     @staticmethod
     @abstractmethod
-    def get_config() -> dict:
-        raise NotImplemented("not implemented")
+    def load_default_config() -> dict:
+        raise NotImplementedError("Method in abstract class that's not implemented.")
 
     @staticmethod
     @abstractmethod
-    def set_instances(algorithm: Algorithm,
-                      settings: dict,
-                      config: dict
-                      ) -> None:
-        raise NotImplemented("not implemented")
+    def set_hyperparameters(algorithm: Algorithm,
+                            settings: dict,
+                            config: dict
+                            ) -> None:
+        raise NotImplementedError("Method in abstract class that's not implemented.")

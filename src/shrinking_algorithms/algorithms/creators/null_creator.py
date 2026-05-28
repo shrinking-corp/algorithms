@@ -4,15 +4,15 @@ from shrinking_algorithms.algorithms import NullAlgorithm
 class NullCreator(AlgorithmCreator):
 
     @staticmethod
-    def get_algorithm() -> NullAlgorithm:
+    def create_instance() -> NullAlgorithm:
         return NullAlgorithm()
 
     @staticmethod
-    def get_config() -> dict:
+    def load_default_config() -> dict:
         return {}
 
     @staticmethod
-    def set_instances(algorithm: NullAlgorithm,
+    def set_hyperparameters(algorithm: NullAlgorithm,
                       settings: dict,
                       config: dict
                       ) -> None:

@@ -7,11 +7,11 @@ import json
 class KruskalCreator(AlgorithmCreator):
 
     @staticmethod
-    def get_algorithm() -> KruskalsAlgorithm:
+    def create_instance() -> KruskalsAlgorithm:
         return KruskalsAlgorithm()
 
     @staticmethod
-    def get_config() -> dict:
+    def load_default_config() -> dict:
         current_file = Path(__file__).resolve()
         parent_dir = current_file.parent.parent
         config_file = parent_dir / "kruskal" / "kruskals_config.json"
@@ -22,7 +22,7 @@ class KruskalCreator(AlgorithmCreator):
         return config
 
     @staticmethod
-    def set_instances(algorithm: KruskalsAlgorithm,
+    def set_hyperparameters(algorithm: KruskalsAlgorithm,
                       settings: dict,
                       config: dict
                       ) -> None:
